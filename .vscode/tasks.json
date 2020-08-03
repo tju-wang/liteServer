@@ -1,0 +1,24 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++-5 build active file",
+            "command": "/usr/bin/g++-5",
+            "args": [
+                "-o",
+                "server",
+                "main.cpp",
+                "lst_timer.cpp",
+                "webserver.cpp",
+                "config.cpp",
+                "-g",
+                "-lpthread",
+                "-lmysqlclient"
+            ],
+            "options": {
+                "cwd": "/home/ubuntu/liteServer"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
