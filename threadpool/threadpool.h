@@ -41,7 +41,7 @@ threadpool<T>::threadpool(int thread_number = 8,int max_requests = 10000):
     {
         throw std::exception();
     }
-    for(int i=0;i<thread_number;++i)    //创建线程池中的现成
+    for(int i=0;i<thread_number;++i)    //创建线程池中的线程
     {
         printf("create the %dth thread\n",i);
         if(pthread_create(m_threads+i,NULL,worker,this) != 0)   //pthread_create

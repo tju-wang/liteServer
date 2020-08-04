@@ -1,6 +1,11 @@
 #include "webserver.h"
 
 
+void WebServer::thread_pool()
+{
+    //线程池
+    m_pool = new threadpool<http_conn>(m_actormodel, m_thread_num);
+}
 
 WebServer::WebServer()  //类的构造函数
 {

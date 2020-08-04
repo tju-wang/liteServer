@@ -22,6 +22,10 @@ int main(int argv,char* argc[])
                 config.OPT_LINGER, config.TRIGMode,  config.sql_num,  config.thread_num, 
                 config.close_log, config.actor_model);
 
+   
+    //线程池
+    server.thread_pool();
+
     //触发模式
     server.trig_mode();
 
