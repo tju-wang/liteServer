@@ -4,7 +4,7 @@
 void WebServer::thread_pool()
 {
     //线程池
-    m_pool = new threadpool<http_conn>(m_actormodel, m_thread_num);
+    m_pool = new threadpool<echo_task>(m_thread_num, 1000);
 }
 
 WebServer::WebServer()  //类的构造函数
@@ -185,13 +185,15 @@ void WebServer::eventLoop()
             //处理客户连接上接收到的数据
             else if (events[i].events & EPOLLIN)
             {
-                //dealwithread(sockfd);
-                char *buff = (char *)malloc(sizeof(char)*100);
-                bzero(buff,100);
-                int len = read(sockfd,buff,100);
-                buff[len] = '\0';
-                printf("read len = %d str =  %s\n",len,buff);
-                write(sockfd,buff,len);
+                dealwithread(sockfd);
+
+                //直接由主线程进行echo的程序
+                // char *buff = (char *)malloc(sizeof(char)*100);
+                // bzero(buff,100);
+                // int len = read(sockfd,buff,100);
+                // buff[len] = '\0';
+                // printf("read len = %d str =  %s\n",len,buff);
+                // write(sockfd,buff,len);
 
             }
             else if (events[i].events & EPOLLOUT)
@@ -212,10 +214,10 @@ void WebServer::eventLoop()
 }
 
 
-/*
+
 void WebServer::dealwithread(int sockfd)
 {
-    util_timer *timer = users_timer[sockfd].timer;
+    //util_timer *timer = users_timer[sockfd].timer;
 
     //reactor
     if (1 == m_actormodel)
@@ -228,39 +230,39 @@ void WebServer::dealwithread(int sockfd)
         //若监测到读事件，将该事件放入请求队列
         m_pool->append(users + sockfd, 0);
 
-        while (true)
-        {
-            if (1 == users[sockfd].improv)
-            {
-                if (1 == users[sockfd].timer_flag)
-                {
-                    deal_timer(timer, sockfd);
-                    users[sockfd].timer_flag = 0;
-                }
-                users[sockfd].improv = 0;
-                break;
-            }
-        }
+        // while (true)
+        // {
+        //     if (1 == users[sockfd].improv)
+        //     {
+        //         if (1 == users[sockfd].timer_flag)
+        //         {
+        //             deal_timer(timer, sockfd);
+        //             users[sockfd].timer_flag = 0;
+        //         }
+        //         users[sockfd].improv = 0;
+        //         break;
+        //     }
+        // }
     }
-    else
-    {
-        //proactor
-        if (users[sockfd].read_once())
-        {
-            LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
+    // else
+    // {
+    //     //proactor
+    //     if (users[sockfd].read_once())
+    //     {
+    //         //LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
 
-            //若监测到读事件，将该事件放入请求队列
-            m_pool->append_p(users + sockfd);
+    //         //若监测到读事件，将该事件放入请求队列
+    //         m_pool->append_p(users + sockfd);
 
-            if (timer)
-            {
-                adjust_timer(timer);
-            }
-        }
-        else
-        {
-            deal_timer(timer, sockfd);
-        }
-    }
+    //         if (timer)
+    //         {
+    //             adjust_timer(timer);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         deal_timer(timer, sockfd);
+    //     }
+    // }
 }
-*/
+

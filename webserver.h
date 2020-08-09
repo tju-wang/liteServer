@@ -16,6 +16,8 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include "./echo_task/echo_task.h"
+
 //#include <config.h>
 
 
@@ -26,7 +28,7 @@ using namespace std;
 //#include <string>
 
 /*线程池相关的头文件*/
-// #include "./threadpool/threadpool.h"
+#include "./threadpool/threadpool.h"
 // #include "./http/http_conn.h"
 
 const int MAX_FD = 65536;           //最大文件描述符
@@ -70,6 +72,7 @@ public:
     int m_pipefd[2];    //管道的文件描述符
     int m_epollfd;
     //http_conn *users;
+    echo_task *users;
 
     //数据库相关
     //connection_pool *m_connPool;
@@ -79,7 +82,7 @@ public:
     int m_sql_num;
 
     // //线程池相关
-    // threadpool<http_conn> *m_pool;
+    threadpool<echo_task> *m_pool;
     int m_thread_num;
 
     // //epoll_event相关

@@ -14,7 +14,7 @@ public:
     threadpool(int thread_number = 8,int max_requests = 10000);
     ~threadpool();
     //向请求队列中添加任务
-    bool append(T* request);
+    bool append(T* request,int stat);   //读为0 写为1
 private:
     /* data */
     static void* worker(void* arg);
@@ -29,10 +29,10 @@ private:
     bool m_stop;    //是否结束线程
 };
 template< typename T>
-threadpool<T>::threadpool(int thread_number = 8,int max_requests = 10000):
-                    m_thread_number(thread_number),m_max_request(max_requests),mstop(false),m_threads(NULL) //默认初始化私有成员
+threadpool<T>::threadpool(int thread_number,int max_requests):
+                    m_thread_number(thread_number),m_max_requests(max_requests),m_stop(false),m_threads(NULL) //默认初始化私有成员
 {
-    if((thread_number<=0) || (max_thread_number <= 0))  //线程池数量 或 最大线程数量<=0 break
+    if((thread_number<=0) || (m_max_requests <= 0))  //线程池数量 或 最大线程数量<=0 break
     {
         throw std::exception();
     }
@@ -63,7 +63,7 @@ threadpool<T>::~threadpool()
     delete[] m_threads;
 }
 template <typename T>
-bool threadpool<T>::append(T* request)
+bool threadpool<T>::append(T* request,int stat)
 {
     /*操作工作队列时，一定要加锁，因为它被所有的线程共享*/
     m_queuelocker.lock();
@@ -72,6 +72,7 @@ bool threadpool<T>::append(T* request)
         m_queuelocker.unlock();
         return false;
     }
+    //request->m_state = stat;
     m_workqueue.push_back(request);
     m_queuelocker.unlock();
     m_queuestat.post();
@@ -88,7 +89,7 @@ void * threadpool<T>::worker(void * arg)
 template <typename T>
 void threadpool<T>::run()
 {
-    wgile(!m_stop)
+    while(!m_stop)
     {
         m_queuestat.wait();
         m_queuelocker.lock();

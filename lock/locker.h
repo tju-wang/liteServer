@@ -52,7 +52,7 @@ public:
             throw std::exception();
         }
     }
-    ~locker();
+    ~locker(){}
     bool lock()
     {
         return pthread_mutex_lock(&m_mutex) == 0;

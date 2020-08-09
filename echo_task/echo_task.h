@@ -44,12 +44,15 @@ private:
     struct stat m_file_stat;    //？
     struct iovec m_iv[2];
     int m_iv_count;
-
+    
+    
     void init();
 
 public:
-    echo_task();
-    ~echo_task();
+    echo_task() {}
+    ~echo_task() {}
+
+    int m_state;  //读为0, 写为1
 
     void init(int sockfd, const sockaddr_in &addr);
     void close_conn(bool real_close = true);
@@ -62,13 +65,13 @@ public:
     }
 };
 
-echo_task::echo_task(/* args */)
-{
-}
+// echo_task::echo_task(/* args */)
+// {
+// }
 
-echo_task::~echo_task()
-{
-}
+// echo_task::~echo_task()
+// {
+// }
 
 
 

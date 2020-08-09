@@ -11,6 +11,7 @@
                 "lst_timer.cpp",
                 "webserver.cpp",
                 "config.cpp",
+                "./echo_task/echo_task.cpp",
                 "-g",
                 "-lpthread",
                 "-lmysqlclient"

@@ -1,4 +1,5 @@
 #include "echo_task.h"
+#include<unistd.h>
 
 locker m_lock;
 
@@ -148,14 +149,17 @@ bool echo_task::write() //写到这
 {
     int temp = 0;
 
+    char buff[] = "This is echo write.\n";
     if (bytes_to_send == 0)
     {
         modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
-        //init();
+        init();
         return true;
     }
-
-    while(1)
+    ::write(m_sockfd,buff,sizeof(buff));    //访问底层的写调用 而非类内函数
+    
+/*
+    while(1)    //涉及到writev的使用
     {
         temp = writev(m_sockfd, m_iv, m_iv_count);
         if(temp<0)
@@ -169,7 +173,7 @@ bool echo_task::write() //写到这
         }
         
     }
-
+*/
     // while (1)
     // {
     //     temp = writev(m_sockfd, m_iv, m_iv_count);
@@ -215,4 +219,75 @@ bool echo_task::write() //写到这
     //         }
     //     }
     // }
+}
+
+
+// http_conn::HTTP_CODE http_conn::process_read()
+// {
+//     LINE_STATUS line_status = LINE_OK;
+//     HTTP_CODE ret = NO_REQUEST;
+//     char *text = 0;
+
+//     while ((m_check_state == CHECK_STATE_CONTENT && line_status == LINE_OK) || ((line_status = parse_line()) == LINE_OK))
+//     {
+//         text = get_line();
+//         m_start_line = m_checked_idx;
+//         LOG_INFO("%s", text);
+//         switch (m_check_state)
+//         {
+//         case CHECK_STATE_REQUESTLINE:
+//         {
+//             ret = parse_request_line(text);
+//             if (ret == BAD_REQUEST)
+//                 return BAD_REQUEST;
+//             break;
+//         }
+//         case CHECK_STATE_HEADER:
+//         {
+//             ret = parse_headers(text);
+//             if (ret == BAD_REQUEST)
+//                 return BAD_REQUEST;
+//             else if (ret == GET_REQUEST)
+//             {
+//                 return do_request();
+//             }
+//             break;
+//         }
+//         case CHECK_STATE_CONTENT:
+//         {
+//             ret = parse_content(text);
+//             if (ret == GET_REQUEST)
+//                 return do_request();
+//             line_status = LINE_OPEN;
+//             break;
+//         }
+//         default:
+//             return INTERNAL_ERROR;
+//         }
+//     }
+//     return NO_REQUEST;
+// }
+
+
+void echo_task::process()
+{
+    // int read_ret = process_read();
+    // if (read_ret == NO_REQUEST)
+    // {
+    //     modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
+    //     return;
+    // }
+    // bool write_ret = process_write(read_ret);
+    // if (!write_ret)
+    // {
+    //     close_conn();
+    // }
+    const int READ_SIZE=100;
+    char readBuff[READ_SIZE];
+    int len = read(m_sockfd,readBuff,READ_SIZE);
+    if(len)
+    {
+        ::write(m_sockfd,readBuff,len);
+    }
+    modfd(m_epollfd, m_sockfd, EPOLLOUT, m_TRIGMode);
 }
